@@ -74,6 +74,6 @@ function fit_glrm(data::df.DataFrame)
 #	println("Initializing GLRM with a warm start")
 #	@time glrms.init_svd!(glrm)
 	@time X, Y, ch = glrms.fit!(glrm)
-	return X, Y, ch
+	return X, Y, ch, labels
 
 end
