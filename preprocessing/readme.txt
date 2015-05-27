@@ -21,7 +21,7 @@ optional arguments:
   --input INPUT         Input file with HCUP data.
   --output OUTPUT       Output database file.
   --delim DELIM         Delimiter for the database input. Default: ,
-  --true TRUE           String representing true booleans. Default '0'
+  --true TRUE           String representing true booleans. Default '1'
   --false FALSE         String representing false booleans. Default '-1'
   --keep_cols KEEP_COLS [KEEP_COLS ...]
                         List of regexes. Columns matching a regex in this list
@@ -64,7 +64,7 @@ To format the HCUP data, using the CCS diagnoses and procedures:
     --cat_cols RACE$ PAY1$ ASOURCE$ DISPUNIFORM$ \
     --idlist_cols DXCCS PRCCS \
     --min_records 0 \
-    --true 0 --false -1 \
+    --true 1 --false -1 \
     --gzip
 
 We will also need to format the severity data (containing comorbidity codes):
@@ -72,7 +72,7 @@ We will also need to format the severity data (containing comorbidity codes):
     --output 2010/processed/NIS_Severity_formatted.csv.gz \
     --keep_cols KEY$ \
     --bool_cols CM_ \
-    --true 0 --false -1 \
+    --true 1 --false -1 \
     --gzip
 
 

@@ -3,11 +3,12 @@ df = DataFrames
 import LowRankModels
 glrms = LowRankModels
 
+export fit_glrm, data_filter
+
 function fit_glrm(data::df.DataFrame)
 
 	n_records = size(data,1)
 
-	println("Setting up GLRM")
 	# Organize the features by their datatype
 	boolean_features = [:FEMALE, :AWEEKEND, :ELECTIVE, :DIED]
 	continuous_features = [:AGE, :TOTCHG, :LOS]
@@ -67,18 +68,20 @@ function fit_glrm(data::df.DataFrame)
 	rx = glrms.nonnegative()
 	ry = glrms.onereg()
 
-	glrm, labels = glrms.GLRM(data, 21, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
+	glrm, labels = glrms.GLRM(data, 10, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
 #	println("Initializing GLRM with a warm start")
 #	@time glrms.init_svd!(glrm)
 	@time X, Y, ch = glrms.fit!(glrm)
 	return X, Y, ch, labels
-
 end
 
 function data_filter(data::df.DataFrame)
+    record_keys = readdlm("/home/aschuler/LatentSyndromes/data/delirium_keys.csv")
+    delirium_set = Set(record_keys)
     cohort = data[!df.isna(data[:AGE]) & (data[:AGE].>18), :]; # remove kids
-    record_keys = cohort[:KEY]                         # get the IDs of the remaining records
-    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID and sepsis\
- columns
+    delirium_index = Bool[in(cohort[:KEY][i], delirium_set) for i in 1:length(cohort[:KEY])] # make a boolean index of delirium records
+    cohort = cohort[delirium_index, :]; # get only hospitalizations with delirium
+    record_keys = cohort[:KEY]  	               # get the IDs of the remaining records
+    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID and sepsis columns
     return cohort, fields, record_keys
 end

@@ -7,7 +7,6 @@ function fit_glrm(data::df.DataFrame)
 
 	n_records = size(data,1)
 
-	println("Setting up GLRM")
 	# Organize the features by their datatype
 	boolean_features = [:FEMALE, :AWEEKEND, :ELECTIVE, :DIED]
 	continuous_features = [:AGE, :TOTCHG, :LOS]
@@ -67,7 +66,7 @@ function fit_glrm(data::df.DataFrame)
 	rx = glrms.nonnegative()
 	ry = glrms.onereg()
 
-	glrm, labels = glrms.GLRM(data, 21, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
+	glrm, labels = glrms.GLRM(data, 10, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
 #	println("Initializing GLRM with a warm start")
 #	@time glrms.init_svd!(glrm)
 	@time X, Y, ch = glrms.fit!(glrm)
@@ -77,8 +76,7 @@ end
 
 function data_filter(data::df.DataFrame)
     cohort = data[!df.isna(data[:AGE]) & (data[:AGE].>18), :]; # remove kids
-    record_keys = cohort[:KEY]                         # get the IDs of the remaining records
-    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID and sepsis\
- columns
+    record_keys = cohort[:KEY]  	               # get the IDs of the remaining records
+    fields = filter(x->(x!=:KEY && x!=:DXCCS_2), names(data));       # get all the names of the coded features sans the ID and sepsis columns
     return cohort, fields, record_keys
 end

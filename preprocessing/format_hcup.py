@@ -20,8 +20,8 @@ parser.add_argument('--output', type=str, required=True, help="Output "
 parser.add_argument('--delim', default=',', help="Delimiter for the database input. "
     "Default: ,")
 
-parser.add_argument('--true', default='0', 
-    help="String representing true booleans. Default '0'")
+parser.add_argument('--true', default='1', 
+    help="String representing true booleans. Default '1'")
 parser.add_argument('--false', default='-1', 
     help="String representing false booleans. Default '-1'")
 
@@ -45,8 +45,8 @@ parser.add_argument('--idlist_cols', default=[], nargs='+', help="List of prefix
     "For each prefix, all columns with name PREFIX + (number) are treated as "
     "containing an unordered list of IDs (e.g. diagnoses or procedures).")
 
-parser.add_argument('--present', default='0', help="Value indicating a feature is present. "
-    "Default is '0'.")
+parser.add_argument('--present', default='1', help="Value indicating a feature is present. "
+    "Default is '1'.")
 parser.add_argument('--absent', default='-1', help="Value to fill with when "
     "expanding ID lists. Default is '-1' to indicate feature (e.g. diagnosis) is absent.")
 
