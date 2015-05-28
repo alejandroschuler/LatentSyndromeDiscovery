@@ -50,16 +50,16 @@ function make_glrm(data::df.DataFrame)
 	for name in names(data)
 	# Assign scaled boolean losses to comorbidity variables
 	    if ismatch(r"^CM", string(name))
-	        losses[name] = glrms.imbalanced_hinge() # this is effectively the same as hinge()
+	        losses[name] = glrms.weighted_hinge() # this is effectively the same as hinge()
 
 	# Assign scaled boolean losses to diagnosis variables
 	    elseif ismatch(r"^DXCCS", string(name)) 
 	        # we could assign this confidence code-by-code if we like, perhaps based on false negative rate
-	        losses[name] = glrms.imbalanced_hinge(case_weight_ratio=1)
+	        losses[name] = glrms.weighted_hinge(case_weight_ratio=1)
 
 	# Assign scaled boolean losses to procedure variables
 	    elseif ismatch(r"^PRCCS", string(name))
-	        losses[name] = glrms.imbalanced_hinge(case_weight_ratio=1)
+	        losses[name] = glrms.weighted_hinge(case_weight_ratio=1)
 	    end
 	end
 
