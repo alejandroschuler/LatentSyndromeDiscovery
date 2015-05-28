@@ -3,7 +3,7 @@ df = DataFrames
 import LowRankModels
 glrms = LowRankModels
 
-function fit_glrm(data::df.DataFrame)
+function make_glrm(data::df.DataFrame)
 
 	n_records = size(data,1)
 
@@ -54,7 +54,7 @@ function fit_glrm(data::df.DataFrame)
 	# Assign scaled boolean losses to diagnosis variables
 	    elseif ismatch(r"^DXCCS", string(name)) 
 	        # we could assign this confidence code-by-code if we like, perhaps based on false negative rate
-	        losses[name] = glrms.imbalanced_hinge(case_weight_ratio=1)
+	        losses[name] = glrms.imbalanced_hinge(case_weight_ratio=2)
 
 	# Assign scaled boolean losses to procedure variables
 	    elseif ismatch(r"^PRCCS", string(name))
@@ -68,17 +68,13 @@ function fit_glrm(data::df.DataFrame)
 	ry = glrms.onereg()
 
 	glrm, labels = glrms.GLRM(data, 21, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
-#	println("Initializing GLRM with a warm start")
-#	@time glrms.init_svd!(glrm)
-	@time X, Y, ch = glrms.fit!(glrm)
-	return X, Y, ch, labels
+	return glrm, labels
 
 end
 
 function data_filter(data::df.DataFrame)
     cohort = data[!df.isna(data[:AGE]) & (data[:AGE].>18), :]; # remove kids
     record_keys = cohort[:KEY]                         # get the IDs of the remaining records
-    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID and sepsis\
- columns
+    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID column
     return cohort, fields, record_keys
 end

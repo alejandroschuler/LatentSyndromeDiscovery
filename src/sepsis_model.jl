@@ -3,7 +3,7 @@ df = DataFrames
 import LowRankModels
 glrms = LowRankModels
 
-function fit_glrm(data::df.DataFrame)
+function make_glrm(data::df.DataFrame)
 
 	n_records = size(data,1)
 
@@ -67,10 +67,7 @@ function fit_glrm(data::df.DataFrame)
 	ry = glrms.onereg()
 
 	glrm, labels = glrms.GLRM(data, 10, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
-#	println("Initializing GLRM with a warm start")
-#	@time glrms.init_svd!(glrm)
-	@time X, Y, ch = glrms.fit!(glrm)
-	return X, Y, ch, labels
+	return glrm, labels
 
 end
 

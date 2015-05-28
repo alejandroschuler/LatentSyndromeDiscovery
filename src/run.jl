@@ -12,7 +12,10 @@ println("Filtering data...")
 cohort, fields, record_keys = data_filter(data);
 
 println("Setting up GLRM...")
-X, Y, ch, labels = fit_glrm(cohort[fields]);
+glrm, labels = make_glrm(cohort[fields]);
+
+# @time glrms.init_svd!(glrm)
+@time X, Y, ch = glrms.fit!(glrm)
 
 println("Saving output...")
 writedlm(string(output_dir,"/X.csv"), X, ',')

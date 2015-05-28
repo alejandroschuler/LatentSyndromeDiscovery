@@ -5,7 +5,7 @@ glrms = LowRankModels
 
 export fit_glrm, data_filter
 
-function fit_glrm(data::df.DataFrame)
+function make_glrm(data::df.DataFrame)
 
 	n_records = size(data,1)
 
@@ -69,10 +69,7 @@ function fit_glrm(data::df.DataFrame)
 	ry = glrms.onereg()
 
 	glrm, labels = glrms.GLRM(data, 10, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
-#	println("Initializing GLRM with a warm start")
-#	@time glrms.init_svd!(glrm)
-	@time X, Y, ch = glrms.fit!(glrm)
-	return X, Y, ch, labels
+	return glrm, labels
 end
 
 function data_filter(data::df.DataFrame)
@@ -82,6 +79,6 @@ function data_filter(data::df.DataFrame)
     delirium_index = Bool[in(cohort[:KEY][i], delirium_set) for i in 1:length(cohort[:KEY])] # make a boolean index of delirium records
     cohort = cohort[delirium_index, :]; # get only hospitalizations with delirium
     record_keys = cohort[:KEY]  	               # get the IDs of the remaining records
-    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID and sepsis columns
+    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID column
     return cohort, fields, record_keys
 end
