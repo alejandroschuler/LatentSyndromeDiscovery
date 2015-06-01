@@ -65,7 +65,7 @@ function make_glrm(data::df.DataFrame)
 
 	losses_array = [losses[name] for name in names(data)]
 	obs = glrms.observations(data)
-	rx = glrms.nonnegative()
+	rx = glrms.onesparse()
 	ry = glrms.onereg()
 
 	glrm, labels = glrms.GLRM(data, 10, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
