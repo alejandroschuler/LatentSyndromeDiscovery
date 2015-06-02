@@ -23,6 +23,12 @@ args = parse_args(s)
 println("Arguments:")
 println(string(args))
 
+output_dir = args["output_dir"]
+if !isdir(output_dir)
+    mkdir(output_dir)
+end
+cp(args["model_file"], string(output_dir,"/model.jl"))
+
 println("Loading code...")
 include(args["model_file"]) 
 
@@ -45,20 +51,16 @@ if args["init_algo"] != nothing
 end
 
 println("Fitting...")
-@time X, Y, ch = glrms.fit!(glrm, params=glrms.Params(0.1,1000,0.000001,0.001))
+@time X, Y, ch = glrms.fit!(glrm, params=glrms.Params(0.1,50,0.0001,0.001))
 println("###### Convergance ######")
 println("Objective\tTime")
 for (o,t) in zip(ch.objective, ch.times)
     println(string(o, "\t", t))
 end
 
-output_dir = args["output_dir"]
-if !isdir(output_dir)
-    mkdir(output_dir)
-end
 writedlm(string(output_dir,"/X.csv"), X, ',')
 writedlm(string(output_dir,"/Y.csv"), Y, ',')
 writedlm(string(output_dir,"/labels.csv"), labels, ',')
 writedlm(string(output_dir,"/record_keys.csv"), record_keys, ',')
-cp(args["model_file"], string(output_dir,"/model.jl"))
+
 
