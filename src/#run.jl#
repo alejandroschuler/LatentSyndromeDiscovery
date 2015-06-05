@@ -23,6 +23,7 @@ s = ArgParseSettings()
         help = "the desired rank for the GLRM"
         required = true
         arg_type = Int
+    
 end
 args = parse_args(s)
 

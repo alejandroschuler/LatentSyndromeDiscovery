@@ -3,11 +3,8 @@ df = DataFrames
 import LowRankModels
 glrms = LowRankModels
 
-function make_glrm(data::df.DataFrame)
+function make_glrm(data::df.DataFrame, rank::Integer)
 
-	n_records = size(data,1)
-
-	println("Setting up GLRM")
 	# Organize the features by their datatype
 	boolean_features = [:FEMALE, :AWEEKEND, :ELECTIVE, :DIED]
 	continuous_features = [:AGE, :TOTCHG, :LOS]
@@ -43,7 +40,7 @@ function make_glrm(data::df.DataFrame)
 	end
 
 	for (name, levels) in periodic_features
-	    losses[name] = glrms.periodic(min(levels...), max(levels...))
+	    losses[name] = glrms.periodic(12+1)
 	end
 
 	for name in names(data)
@@ -63,20 +60,16 @@ function make_glrm(data::df.DataFrame)
 	end
 
 	losses_array = [losses[name] for name in names(data)]
-	rx = glrms.onereg()
-	ry = glrms.quadreg()
-        println("Finding observed values..")
-	obs = glrms.observations(data)
+	rx = glrms.zeroreg()
+	ry = glrms.zeroreg()
 
-        println("Setting up GLRM...")
-	glrm, labels = glrms.GLRM(data, 51, losses=losses_array, rx=rx, ry=ry, scale=true, offset=true)
+	glrm, labels = glrms.GLRM(data, rank, losses=losses_array, rx=rx, ry=ry)
 	return glrm, labels
-
 end
 
-function data_filter(data::df.DataFrame)
-    cohort = data[!df.isna(data[:AGE]) & (data[:AGE].>18), :]; # remove kids
-    record_keys = cohort[:KEY]                         # get the IDs of the remaining records
-    fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID column
-    return cohort, fields, record_keys
-end
+# function data_filter(data::df.DataFrame)
+#     cohort = data[!df.isna(data[:AGE]) & (data[:AGE].>18), :]; # remove kids
+#     record_keys = cohort[:KEY]                         # get the IDs of the remaining records
+#     fields = filter(x->(x!=:KEY), names(data));       # get all the names of the coded features sans the ID column
+#     return cohort, fields, record_keys
+# end
