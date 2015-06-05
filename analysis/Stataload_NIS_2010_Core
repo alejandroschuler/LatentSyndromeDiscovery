@@ -1,0 +1,429 @@
+STATA HCUP NIS LOAD FILES
+
+/*****************************************************************************
+* Stataload_NIS_2010_Core.Do
+* This program will load the 2010 NIS ASCII Core File into Stata.
+* Because Stata loads the entire file into memory, it may not be possible
+* to load every data element for large files.  If necessary, edit this
+* program to change the memory size or to load only selected data elements.
+*****************************************************************************/
+
+*** Read data elements from the ASCII file ***
+infix int    AGE                         1-  3   ///
+      int    AGEDAY                      4-  6   ///
+      byte   AMONTH                      7-  8   ///
+      byte   ASOURCE                     9- 10   ///
+      str    ASOURCEUB92                11       ///
+      str    ASOURCE_X                  12- 14   ///
+      byte   ATYPE                      15- 16   ///
+      byte   AWEEKEND                   17- 18   ///
+      byte   DIED                       19- 20   ///
+      double DISCWT                     21- 31   ///
+      byte   DISPUB04                   32- 33   ///
+      byte   DISPUNIFORM                34- 35   ///
+      byte   DQTR                       36- 37   ///
+      byte   DQTR_X                     38- 39   ///
+      int    DRG                        40- 42   ///
+      int    DRG24                      43- 45   ///
+      byte   DRGVER                     46- 47   ///
+      int    DRG_NoPOA                  48- 50   ///
+      str    DSHOSPID                   51- 67   ///
+      str    DX1                        68- 72   ///
+      str    DX2                        73- 77   ///
+      str    DX3                        78- 82   ///
+      str    DX4                        83- 87   ///
+      str    DX5                        88- 92   ///
+      str    DX6                        93- 97   ///
+      str    DX7                        98-102   ///
+      str    DX8                       103-107   ///
+      str    DX9                       108-112   ///
+      str    DX10                      113-117   ///
+      str    DX11                      118-122   ///
+      str    DX12                      123-127   ///
+      str    DX13                      128-132   ///
+      str    DX14                      133-137   ///
+      str    DX15                      138-142   ///
+      str    DX16                      143-147   ///
+      str    DX17                      148-152   ///
+      str    DX18                      153-157   ///
+      str    DX19                      158-162   ///
+      str    DX20                      163-167   ///
+      str    DX21                      168-172   ///
+      str    DX22                      173-177   ///
+      str    DX23                      178-182   ///
+      str    DX24                      183-187   ///
+      str    DX25                      188-192   ///
+      int    DXCCS1                    193-195   ///
+      int    DXCCS2                    196-198   ///
+      int    DXCCS3                    199-201   ///
+      int    DXCCS4                    202-204   ///
+      int    DXCCS5                    205-207   ///
+      int    DXCCS6                    208-210   ///
+      int    DXCCS7                    211-213   ///
+      int    DXCCS8                    214-216   ///
+      int    DXCCS9                    217-219   ///
+      int    DXCCS10                   220-222   ///
+      int    DXCCS11                   223-225   ///
+      int    DXCCS12                   226-228   ///
+      int    DXCCS13                   229-231   ///
+      int    DXCCS14                   232-234   ///
+      int    DXCCS15                   235-237   ///
+      int    DXCCS16                   238-240   ///
+      int    DXCCS17                   241-243   ///
+      int    DXCCS18                   244-246   ///
+      int    DXCCS19                   247-249   ///
+      int    DXCCS20                   250-252   ///
+      int    DXCCS21                   253-255   ///
+      int    DXCCS22                   256-258   ///
+      int    DXCCS23                   259-261   ///
+      int    DXCCS24                   262-264   ///
+      int    DXCCS25                   265-267   ///
+      str    ECODE1                    268-272   ///
+      str    ECODE2                    273-277   ///
+      str    ECODE3                    278-282   ///
+      str    ECODE4                    283-287   ///
+      byte   ELECTIVE                  288-289   ///
+      int    E_CCS1                    290-293   ///
+      int    E_CCS2                    294-297   ///
+      int    E_CCS3                    298-301   ///
+      int    E_CCS4                    302-305   ///
+      byte   FEMALE                    306-307   ///
+      int    HCUP_ED                   308-310   ///
+      byte   HOSPBRTH                  311-312   ///
+      long   HOSPID                    313-317   ///
+      str    HOSPST                    318-319   ///
+      double KEY                       320-334   ///
+      long   LOS                       335-339   ///
+      long   LOS_X                     340-345   ///
+      byte   MDC                       346-347   ///
+      byte   MDC24                     348-349   ///
+      byte   MDC_NoPOA                 350-351   ///
+      byte   NCHRONIC                  352-353   ///
+      byte   NDX                       354-355   ///
+      int    NECODE                    356-358   ///
+      byte   NEOMAT                    359-360   ///
+      int    NIS_STRATUM               361-364   ///
+      byte   NPR                       365-366   ///
+      byte   ORPROC                    367-368   ///
+      byte   PAY1                      369-370   ///
+      str    PAY1_X                    371-380   ///
+      byte   PAY2                      381-382   ///
+      str    PAY2_X                    383-392   ///
+      int    PL_NCHS2006               393-395   ///
+      str    PR1                       396-399   ///
+      str    PR2                       400-403   ///
+      str    PR3                       404-407   ///
+      str    PR4                       408-411   ///
+      str    PR5                       412-415   ///
+      str    PR6                       416-419   ///
+      str    PR7                       420-423   ///
+      str    PR8                       424-427   ///
+      str    PR9                       428-431   ///
+      str    PR10                      432-435   ///
+      str    PR11                      436-439   ///
+      str    PR12                      440-443   ///
+      str    PR13                      444-447   ///
+      str    PR14                      448-451   ///
+      str    PR15                      452-455   ///
+      int    PRCCS1                    456-458   ///
+      int    PRCCS2                    459-461   ///
+      int    PRCCS3                    462-464   ///
+      int    PRCCS4                    465-467   ///
+      int    PRCCS5                    468-470   ///
+      int    PRCCS6                    471-473   ///
+      int    PRCCS7                    474-476   ///
+      int    PRCCS8                    477-479   ///
+      int    PRCCS9                    480-482   ///
+      int    PRCCS10                   483-485   ///
+      int    PRCCS11                   486-488   ///
+      int    PRCCS12                   489-491   ///
+      int    PRCCS13                   492-494   ///
+      int    PRCCS14                   495-497   ///
+      int    PRCCS15                   498-500   ///
+      int    PRDAY1                    501-503   ///
+      int    PRDAY2                    504-506   ///
+      int    PRDAY3                    507-509   ///
+      int    PRDAY4                    510-512   ///
+      int    PRDAY5                    513-515   ///
+      int    PRDAY6                    516-518   ///
+      int    PRDAY7                    519-521   ///
+      int    PRDAY8                    522-524   ///
+      int    PRDAY9                    525-527   ///
+      int    PRDAY10                   528-530   ///
+      int    PRDAY11                   531-533   ///
+      int    PRDAY12                   534-536   ///
+      int    PRDAY13                   537-539   ///
+      int    PRDAY14                   540-542   ///
+      int    PRDAY15                   543-545   ///
+      str    PointOfOriginUB04         546       ///
+      str    PointOfOrigin_X           547-554   ///
+      byte   RACE                      555-556   ///
+      double TOTCHG                    557-566   ///
+      double TOTCHG_X                  567-581   ///
+      byte   TRAN_IN                   582-583   ///
+      byte   TRAN_OUT                  584-585   ///
+      int    YEAR                      586-589   ///
+      byte   ZIPINC_QRTL               590-591   ///
+      using  "/volumes/projects-group$/LIU ADMINISTRATIVE/DATA Files/NIS_2010_Core.ASC"
+
+***  Assign labels to the data elements ***
+label var AGE                      "Age in years at admission"
+label var AGEDAY                   "Age in days (when age < 1 year)"
+label var AMONTH                   "Admission month"
+label var ASOURCE                  "Admission source (uniform)"
+label var ASOURCEUB92              "Admission source (UB-92 standard coding)"
+label var ASOURCE_X                "Admission source (as received from source)"
+label var ATYPE                    "Admission type"
+label var AWEEKEND                 "Admission day is a weekend"
+label var DIED                     "Died during hospitalization"
+label var DISCWT                   "Weight to discharges in AHA universe"
+label var DISPUB04                 "Disposition of patient (UB-04 standard coding)"
+label var DISPUNIFORM              "Disposition of patient (uniform)"
+label var DQTR                     "Discharge quarter"
+label var DQTR_X                   "Discharge quarter (as received from source)"
+label var DRG                      "DRG in effect on discharge date"
+label var DRG24                    "DRG, version 24"
+label var DRGVER                   "DRG grouper version used on discharge date"
+label var DRG_NoPOA                "DRG in use on discharge date, calculated without POA"
+label var DSHOSPID                 "Data source hospital identifier"
+label var DX1                      "Diagnosis 1"
+label var DX2                      "Diagnosis 2"
+label var DX3                      "Diagnosis 3"
+label var DX4                      "Diagnosis 4"
+label var DX5                      "Diagnosis 5"
+label var DX6                      "Diagnosis 6"
+label var DX7                      "Diagnosis 7"
+label var DX8                      "Diagnosis 8"
+label var DX9                      "Diagnosis 9"
+label var DX10                     "Diagnosis 10"
+label var DX11                     "Diagnosis 11"
+label var DX12                     "Diagnosis 12"
+label var DX13                     "Diagnosis 13"
+label var DX14                     "Diagnosis 14"
+label var DX15                     "Diagnosis 15"
+label var DX16                     "Diagnosis 16"
+label var DX17                     "Diagnosis 17"
+label var DX18                     "Diagnosis 18"
+label var DX19                     "Diagnosis 19"
+label var DX20                     "Diagnosis 20"
+label var DX21                     "Diagnosis 21"
+label var DX22                     "Diagnosis 22"
+label var DX23                     "Diagnosis 23"
+label var DX24                     "Diagnosis 24"
+label var DX25                     "Diagnosis 25"
+label var DXCCS1                   "CCS: diagnosis 1"
+label var DXCCS2                   "CCS: diagnosis 2"
+label var DXCCS3                   "CCS: diagnosis 3"
+label var DXCCS4                   "CCS: diagnosis 4"
+label var DXCCS5                   "CCS: diagnosis 5"
+label var DXCCS6                   "CCS: diagnosis 6"
+label var DXCCS7                   "CCS: diagnosis 7"
+label var DXCCS8                   "CCS: diagnosis 8"
+label var DXCCS9                   "CCS: diagnosis 9"
+label var DXCCS10                  "CCS: diagnosis 10"
+label var DXCCS11                  "CCS: diagnosis 11"
+label var DXCCS12                  "CCS: diagnosis 12"
+label var DXCCS13                  "CCS: diagnosis 13"
+label var DXCCS14                  "CCS: diagnosis 14"
+label var DXCCS15                  "CCS: diagnosis 15"
+label var DXCCS16                  "CCS: diagnosis 16"
+label var DXCCS17                  "CCS: diagnosis 17"
+label var DXCCS18                  "CCS: diagnosis 18"
+label var DXCCS19                  "CCS: diagnosis 19"
+label var DXCCS20                  "CCS: diagnosis 20"
+label var DXCCS21                  "CCS: diagnosis 21"
+label var DXCCS22                  "CCS: diagnosis 22"
+label var DXCCS23                  "CCS: diagnosis 23"
+label var DXCCS24                  "CCS: diagnosis 24"
+label var DXCCS25                  "CCS: diagnosis 25"
+label var ECODE1                   "E code 1"
+label var ECODE2                   "E code 2"
+label var ECODE3                   "E code 3"
+label var ECODE4                   "E code 4"
+label var ELECTIVE                 "Elective versus non-elective admission"
+label var E_CCS1                   "CCS: E Code 1"
+label var E_CCS2                   "CCS: E Code 2"
+label var E_CCS3                   "CCS: E Code 3"
+label var E_CCS4                   "CCS: E Code 4"
+label var FEMALE                   "Indicator of sex"
+label var HCUP_ED                  "HCUP Emergency Department service indicator"
+label var HOSPBRTH                 "Indicator of birth in this hospital"
+label var HOSPID                   "HCUP hospital identification number"
+label var HOSPST                   "Hospital state postal code"
+label var KEY                      "HCUP record identifier"
+label var LOS                      "Length of stay (cleaned)"
+label var LOS_X                    "Length of stay (as received from source)"
+label var MDC                      "MDC in effect on discharge date"
+label var MDC24                    "MDC, version 24"
+label var MDC_NoPOA                "MDC in use on discharge date, calculated without POA"
+label var NCHRONIC                 "Number of chronic conditions"
+label var NDX                      "Number of diagnoses on this record"
+label var NECODE                   "Number of E codes on this record"
+label var NEOMAT                   "Neonatal and/or maternal DX and/or PR"
+label var NIS_STRATUM              "Stratum used to sample hospital"
+label var NPR                      "Number of procedures on this record"
+label var ORPROC                   "Major operating room procedure indicator"
+label var PAY1                     "Primary expected payer (uniform)"
+label var PAY1_X                   "Primary expected payer (as received from source)"
+label var PAY2                     "Secondary expected payer (uniform)"
+label var PAY2_X                   "Secondary expected payer (as received from source)"
+label var PL_NCHS2006              "Patient Location: NCHS Urban-Rural Code (V2006)"
+label var PR1                      "Procedure 1"
+label var PR2                      "Procedure 2"
+label var PR3                      "Procedure 3"
+label var PR4                      "Procedure 4"
+label var PR5                      "Procedure 5"
+label var PR6                      "Procedure 6"
+label var PR7                      "Procedure 7"
+label var PR8                      "Procedure 8"
+label var PR9                      "Procedure 9"
+label var PR10                     "Procedure 10"
+label var PR11                     "Procedure 11"
+label var PR12                     "Procedure 12"
+label var PR13                     "Procedure 13"
+label var PR14                     "Procedure 14"
+label var PR15                     "Procedure 15"
+label var PRCCS1                   "CCS: procedure 1"
+label var PRCCS2                   "CCS: procedure 2"
+label var PRCCS3                   "CCS: procedure 3"
+label var PRCCS4                   "CCS: procedure 4"
+label var PRCCS5                   "CCS: procedure 5"
+label var PRCCS6                   "CCS: procedure 6"
+label var PRCCS7                   "CCS: procedure 7"
+label var PRCCS8                   "CCS: procedure 8"
+label var PRCCS9                   "CCS: procedure 9"
+label var PRCCS10                  "CCS: procedure 10"
+label var PRCCS11                  "CCS: procedure 11"
+label var PRCCS12                  "CCS: procedure 12"
+label var PRCCS13                  "CCS: procedure 13"
+label var PRCCS14                  "CCS: procedure 14"
+label var PRCCS15                  "CCS: procedure 15"
+label var PRDAY1                   "Number of days from admission to PR1"
+label var PRDAY2                   "Number of days from admission to PR2"
+label var PRDAY3                   "Number of days from admission to PR3"
+label var PRDAY4                   "Number of days from admission to PR4"
+label var PRDAY5                   "Number of days from admission to PR5"
+label var PRDAY6                   "Number of days from admission to PR6"
+label var PRDAY7                   "Number of days from admission to PR7"
+label var PRDAY8                   "Number of days from admission to PR8"
+label var PRDAY9                   "Number of days from admission to PR9"
+label var PRDAY10                  "Number of days from admission to PR10"
+label var PRDAY11                  "Number of days from admission to PR11"
+label var PRDAY12                  "Number of days from admission to PR12"
+label var PRDAY13                  "Number of days from admission to PR13"
+label var PRDAY14                  "Number of days from admission to PR14"
+label var PRDAY15                  "Number of days from admission to PR15"
+label var PointOfOriginUB04        "Point of origin for admission or visit, UB-04 standard coding"
+label var PointOfOrigin_X          "Point of origin for admission or visit, as received from source"
+label var RACE                     "Race (uniform)"
+label var TOTCHG                   "Total charges (cleaned)"
+label var TOTCHG_X                 "Total charges (as received from source)"
+label var TRAN_IN                  "Transfer in indicator"
+label var TRAN_OUT                 "Transfer out indicator"
+label var YEAR                     "Calendar year"
+label var ZIPINC_QRTL              "Median household income national quartile for patient ZIP Code"
+
+*** Convert special values to missing values ***
+recode AGE                       (-99 -88 -66=.)
+recode AGEDAY                    (-99 -88 -66=.)
+recode AMONTH                    (-9 -8 -6 -5=.)
+recode ASOURCE                   (-9 -8 -6 -5=.)
+recode ATYPE                     (-9 -8 -6 -5=.)
+recode AWEEKEND                  (-9 -8 -6 -5=.)
+recode DIED                      (-9 -8 -6 -5=.)
+recode DISCWT                    (-99.9999999 -88.8888888 -66.6666666=.)
+recode DISPUB04                  (-9 -8 -6 -5=.)
+recode DISPUNIFORM               (-9 -8 -6 -5=.)
+recode DQTR                      (-9 -8 -6 -5=.)
+recode DQTR_X                    (-9 -8 -6 -5=.)
+recode DRG                       (-99 -88 -66=.)
+recode DRG24                     (-99 -88 -66=.)
+recode DRGVER                    (-9 -8 -6 -5=.)
+recode DRG_NoPOA                 (-99 -88 -66=.)
+recode DXCCS1                    (-99 -88 -66=.)
+recode DXCCS2                    (-99 -88 -66=.)
+recode DXCCS3                    (-99 -88 -66=.)
+recode DXCCS4                    (-99 -88 -66=.)
+recode DXCCS5                    (-99 -88 -66=.)
+recode DXCCS6                    (-99 -88 -66=.)
+recode DXCCS7                    (-99 -88 -66=.)
+recode DXCCS8                    (-99 -88 -66=.)
+recode DXCCS9                    (-99 -88 -66=.)
+recode DXCCS10                   (-99 -88 -66=.)
+recode DXCCS11                   (-99 -88 -66=.)
+recode DXCCS12                   (-99 -88 -66=.)
+recode DXCCS13                   (-99 -88 -66=.)
+recode DXCCS14                   (-99 -88 -66=.)
+recode DXCCS15                   (-99 -88 -66=.)
+recode DXCCS16                   (-99 -88 -66=.)
+recode DXCCS17                   (-99 -88 -66=.)
+recode DXCCS18                   (-99 -88 -66=.)
+recode DXCCS19                   (-99 -88 -66=.)
+recode DXCCS20                   (-99 -88 -66=.)
+recode DXCCS21                   (-99 -88 -66=.)
+recode DXCCS22                   (-99 -88 -66=.)
+recode DXCCS23                   (-99 -88 -66=.)
+recode DXCCS24                   (-99 -88 -66=.)
+recode DXCCS25                   (-99 -88 -66=.)
+recode ELECTIVE                  (-9 -8 -6 -5=.)
+recode E_CCS1                    (-999 -888 -666=.)
+recode E_CCS2                    (-999 -888 -666=.)
+recode E_CCS3                    (-999 -888 -666=.)
+recode E_CCS4                    (-999 -888 -666=.)
+recode FEMALE                    (-9 -8 -6 -5=.)
+recode HCUP_ED                   (-99 -88 -66=.)
+recode HOSPBRTH                  (-9 -8 -6 -5=.)
+recode LOS                       (-9999 -8888 -6666=.)
+recode LOS_X                     (-99999 -88888 -66666=.)
+recode MDC                       (-9 -8 -6 -5=.)
+recode MDC24                     (-9 -8 -6 -5=.)
+recode MDC_NoPOA                 (-9 -8 -6 -5=.)
+recode NCHRONIC                  (-9 -8 -6 -5=.)
+recode NDX                       (-9 -8 -6 -5=.)
+recode NECODE                    (-99 -88 -66=.)
+recode NEOMAT                    (-9 -8 -6 -5=.)
+recode NIS_STRATUM               (-999 -888 -666=.)
+recode NPR                       (-9 -8 -6 -5=.)
+recode ORPROC                    (-9 -8 -6 -5=.)
+recode PAY1                      (-9 -8 -6 -5=.)
+recode PAY2                      (-9 -8 -6 -5=.)
+recode PL_NCHS2006               (-99 -88 -66=.)
+recode PRCCS1                    (-99 -88 -66=.)
+recode PRCCS2                    (-99 -88 -66=.)
+recode PRCCS3                    (-99 -88 -66=.)
+recode PRCCS4                    (-99 -88 -66=.)
+recode PRCCS5                    (-99 -88 -66=.)
+recode PRCCS6                    (-99 -88 -66=.)
+recode PRCCS7                    (-99 -88 -66=.)
+recode PRCCS8                    (-99 -88 -66=.)
+recode PRCCS9                    (-99 -88 -66=.)
+recode PRCCS10                   (-99 -88 -66=.)
+recode PRCCS11                   (-99 -88 -66=.)
+recode PRCCS12                   (-99 -88 -66=.)
+recode PRCCS13                   (-99 -88 -66=.)
+recode PRCCS14                   (-99 -88 -66=.)
+recode PRCCS15                   (-99 -88 -66=.)
+recode PRDAY1                    (-99 -88 -66=.)
+recode PRDAY2                    (-99 -88 -66=.)
+recode PRDAY3                    (-99 -88 -66=.)
+recode PRDAY4                    (-99 -88 -66=.)
+recode PRDAY5                    (-99 -88 -66=.)
+recode PRDAY6                    (-99 -88 -66=.)
+recode PRDAY7                    (-99 -88 -66=.)
+recode PRDAY8                    (-99 -88 -66=.)
+recode PRDAY9                    (-99 -88 -66=.)
+recode PRDAY10                   (-99 -88 -66=.)
+recode PRDAY11                   (-99 -88 -66=.)
+recode PRDAY12                   (-99 -88 -66=.)
+recode PRDAY13                   (-99 -88 -66=.)
+recode PRDAY14                   (-99 -88 -66=.)
+recode PRDAY15                   (-99 -88 -66=.)
+recode RACE                      (-9 -8 -6 -5=.)
+recode TOTCHG                    (-999999999 -888888888 -666666666=.)
+recode TOTCHG_X                  (-99999999999.99 -88888888888.88 -66666666666.66=.)
+recode TRAN_IN                   (-9 -8 -6 -5=.)
+recode TRAN_OUT                  (-9 -8 -6 -5=.)
+recode YEAR                      (-999 -888 -666=.)
+recode ZIPINC_QRTL               (-9 -8 -6 -5=.)
+
+save "/volumes/projects-group$/LIU ADMINISTRATIVE/DATA Files/NIS_2010_Core.dta", replace

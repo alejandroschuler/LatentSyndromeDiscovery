@@ -1,0 +1,110 @@
+/*****************************************************************************
+* Stataload_NIS_2010_Hospital.Do
+* This program will load the 2010 NIS ASCII Hospital File into Stata.
+* Because Stata loads the entire file into memory, it may not be possible
+* to load every data element for large files.  If necessary, edit this
+* program to change the memory size or to load only selected data elements.
+*****************************************************************************/
+
+*** Set available memory size ***
+set mem 500m
+
+*** Read data elements from the ASCII file ***
+infix str    HOSPST                      1-  2   ///
+      str    AHAID                       3-  9   ///
+      double DISCWT                     10- 20   ///
+      long   HFIPSSTCO                  21- 25   ///
+      byte   H_CONTRL                   26- 27   ///
+      str    HOSPADDR                   28- 87   ///
+      str    HOSPCITY                   88-107   ///
+      long   HOSPID                    108-112   ///
+      str    HOSPNAME                  113-202   ///
+      long   HOSPSTCO                  203-207   ///
+      double HOSPWT                    208-218   ///
+      str    HOSPZIP                   219-223   ///
+      byte   HOSP_BEDSIZE              224-225   ///
+      byte   HOSP_CONTROL              226-227   ///
+      byte   HOSP_LOCATION             228-229   ///
+      byte   HOSP_LOCTEACH             230-231   ///
+      byte   HOSP_REGION               232-233   ///
+      byte   HOSP_TEACH                234-235   ///
+      str    IDNUMBER                  236-241   ///
+      int    NIS_STRATUM               242-245   ///
+      long   N_DISC_U                  246-253   ///
+      int    N_HOSP_U                  254-257   ///
+      long   S_DISC_U                  258-263   ///
+      int    S_HOSP_U                  264-267   ///
+      long   TOTAL_DISC                268-273   ///
+      int    YEAR                      274-277   ///
+      int    HOSP_RNPCT                278-280   ///
+      float  HOSP_RNFTEAPD             281-284   ///
+      float  HOSP_LPNFTEAPD            285-288   ///
+      float  HOSP_NAFTEAPD             289-292   ///
+      int    HOSP_OPSURGPCT            293-295   ///
+      byte   HOSP_MHSMEMBER            296-297   ///
+      byte   HOSP_MHSCLUSTER           298-299   ///
+      using  "/volumes/projects-group$/LIU ADMINISTRATIVE/DATA Files/NIS_2010_Hospital.ASC"
+
+***  Assign labels to the data elements ***
+label var HOSPST                   "Hospital state postal code"
+label var AHAID                    "AHA hospital identifier with the leading 6"
+label var DISCWT                   "Weight to discharges in AHA universe"
+label var HFIPSSTCO                "Hospital FIPS state/county code"
+label var H_CONTRL                 "Control/ownership of hospital"
+label var HOSPADDR                 "Hospital address from AHA Survey (Z011)"
+label var HOSPCITY                 "Hospital city from AHA Survey (Z012)"
+label var HOSPID                   "HCUP hospital identification number"
+label var HOSPNAME                 "Hospital name from AHA Survey (Z000)"
+label var HOSPSTCO                 "Hospital modified FIPS state/county code"
+label var HOSPWT                   "Weight to hospitals in AHA universe"
+label var HOSPZIP                  "Hospital ZIP Code from AHA Survey (Z014)"
+label var HOSP_BEDSIZE             "Bed size of hospital (STRATA)"
+label var HOSP_CONTROL             "Control/ownership of hospital (STRATA)"
+label var HOSP_LOCATION            "Location (urban/rural) of hospital"
+label var HOSP_LOCTEACH            "Location/teaching status of hospital (STRATA)"
+label var HOSP_REGION              "Region of hospital (STRATA)"
+label var HOSP_TEACH               "Teaching status of hospital"
+label var IDNUMBER                 "AHA hospital identifier without the leading 6"
+label var NIS_STRATUM              "Stratum used to sample hospital"
+label var N_DISC_U                 "Number of AHA universe discharges in NIS_STRATUM"
+label var N_HOSP_U                 "Number of AHA universe hospitals in NIS_STRATUM"
+label var S_DISC_U                 "Number of sample discharges in NIS_STRATUM"
+label var S_HOSP_U                 "Number of sample hospitals in NIS_STRATUM"
+label var TOTAL_DISC               "Total number of discharges from this hospital in the NIS"
+label var YEAR                     "Calendar Year"
+label var HOSP_RNPCT               "Percentage of RN among licensed nurses-H"
+label var HOSP_RNFTEAPD            "RN FTEs per 1000 adjusted patient days-H"
+label var HOSP_LPNFTEAPD           "LPN FTEs per 1000 adjusted patient days-H"
+label var HOSP_NAFTEAPD            "Nurse aides per 1000 adjusted patient days-H"
+label var HOSP_OPSURGPCT           "Percentage of all surgeries performed in outpatient setting-H"
+label var HOSP_MHSMEMBER           "Hospital is part of multiple hospital system-H"
+label var HOSP_MHSCLUSTER          "AHA multiple hospital system cluster code-H"
+
+*** Convert special values to missing values ***
+recode DISCWT                    (-99.9999999 -88.8888888 -66.6666666=.)
+recode HFIPSSTCO                 (-9999 -8888 -6666=.)
+recode H_CONTRL                  (-9 -8 -6 -5=.)
+recode HOSPSTCO                  (-9999 -8888 -6666=.)
+recode HOSPWT                    (-99.9999999 -88.8888888 -66.6666666=.)
+recode HOSP_BEDSIZE              (-9 -8 -6 -5=.)
+recode HOSP_CONTROL              (-9 -8 -6 -5=.)
+recode HOSP_LOCATION             (-9 -8 -6 -5=.)
+recode HOSP_LOCTEACH             (-9 -8 -6 -5=.)
+recode HOSP_REGION               (-9 -8 -6 -5=.)
+recode HOSP_TEACH                (-9 -8 -6 -5=.)
+recode NIS_STRATUM               (-999 -888 -666=.)
+recode N_DISC_U                  (-9999999 -8888888 -6666666=.)
+recode N_HOSP_U                  (-999 -888 -666=.)
+recode S_DISC_U                  (-99999 -88888 -66666=.)
+recode S_HOSP_U                  (-999 -888 -666=.)
+recode TOTAL_DISC                (-99999 -88888 -66666=.)
+recode YEAR                      (-999 -888 -666=.)
+recode HOSP_RNPCT                (-99 -88 -66=.)
+recode HOSP_RNFTEAPD             (-9.9 -8.8 -6.6=.)
+recode HOSP_LPNFTEAPD            (-9.9 -8.8 -6.6=.)
+recode HOSP_NAFTEAPD             (-9.9 -8.8 -6.6=.)
+recode HOSP_OPSURGPCT            (-99 -88 -66=.)
+recode HOSP_MHSMEMBER            (-9 -8 -6 -5=.)
+recode HOSP_MHSCLUSTER           (-9 -8 -6 -5=.)
+
+save "/volumes/projects-group$/LIU ADMINISTRATIVE/DATA Files/NIS_2010_Hospital.dta", replace

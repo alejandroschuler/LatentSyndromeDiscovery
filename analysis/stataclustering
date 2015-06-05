@@ -1,0 +1,380 @@
+	*** data prep for BMI 212 evaluation ***
+	
+	
+	
+	
+	
+	
+	** data prep for comorbidity files ***
+	
+		clear 
+		
+			import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/NIS_Severity.csv", delimiter(comma) 
+
+			keep key cm_aids-cm_wghtloss
+			sort key
+			
+			save "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/NIS2010 Comorbid.dta", replace
+	
+		
+	** merge comorbidity with full file **
+	
+		clear
+		
+			use "/Volumes/projects-group$/LIU ADMINISTRATIVE/DATA Files/NIS/STATA/NIS_2010_Core.dta"
+			
+			rename *, lower
+			
+			sort key
+			
+			merge 1:1 key using "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/NIS2010 Comorbid.dta"
+			
+			keep age amonth asource aweekend died dxccs1-dxccs25 female key los nchronic pay1_x prccs1-prccs15 race totchg cm_aids-cm_wghtloss
+			
+			
+				gen nursinghome = 1 if asource==3
+					drop asource
+				drop if age<18
+				
+				forval i=1/12 {
+					gen month`i' = .
+					}
+				forval i=1/12 {
+					replace month`i' = `i' if amonth==`i'
+					}
+				drop amonth
+				
+				forval i=1/259 {
+					gen ccs`i' = .
+					}
+				forval i=650/663 {
+					gen ccs`i' = .
+					}
+				gen ccs670 = .
+				
+				forval i=1/25 {
+					forval j=1/259 {
+						replace ccs`j' = 1 if dxccs`i'==`j'
+							}
+							}
+				forval i=1/25 {
+					forval j=650/663 {
+						replace ccs`j' = 1 if dxccs`i'==`j'
+							}
+							}
+				forval i=1/25 {
+					replace ccs670 = 1 if dxccs`i'==670
+					}
+					
+				forval i=1/231 {
+					gen ccspr`i' = .
+					}
+				forval i=1/15 {
+					forval j = 1/231 {
+						replace ccspr`i' = 1 if prccs`i' == `j'
+						}
+						}
+						
+				forval i=19/110 {	
+					gen age`i' = .
+					}
+				forval i = 19/110 {
+					replace age`i' = 1 if age==`i'
+					}
+					
+					
+				save "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/NIS Expanded 2010.csv", replace
+				
+			
+			
+		**** ANalysis code for hinge output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/hingeoutput.csv", delimiter(comma) 
+
+					rename v107 cluster
+					
+					table cluster, c(mean age sd age)
+					tab dxccs1 cluster
+				
+		**** ANalysis code for newsepsis output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/newsepsisoutput.csv", delimiter(comma) 
+
+					gen sepsis2 = 1 if sepsis=="1"
+						replace sepsis2 = 0 if sepsis2==.
+					drop sepsis
+					rename sepsis2 sepsis
+					
+				
+					forval i=107/125 {
+						local j = 2+(`i' - 107)
+						display `j'
+						rename v`i' cluster`j'
+						}
+					
+					forval i = 2/20 {
+						tab sepsis cluster`i', col row
+						}
+					
+					gen countsepsis=1 if sepsis==1
+					gen countnonsepsis = 1 if sepsis==0
+					
+				forval i = 2/20 {	
+					graph bar (count)countsepsis (count)countnonsepsis,  over(cluster`i') stack play("/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/ClusterSepsis 2015-0603.grec")
+					graph save Graph "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/Cluster`i' 2015-0603.gph", replace
+					graph export "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/Cluster`i' 2015-0603.png", replace
+					}
+
+					forval i = 2/20 {	
+					graph bar (count)countsepsis (count)countnonsepsis,  over(cluster`i') stack per play("/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/ClusterSepsis 2015-0603.grec")
+					graph save Graph "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/Per/Cluster`i' Per 2015-0603.gph", replace
+					graph export "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/Graph/Per/Cluster`i' Per 2015-0603.png", replace
+					}
+				
+				
+				graph bar (count)countsepsis (count)countnonsepsis, over(cluster3) stack
+					graph bar (count)
+				
+					gen death = 1 if died=="1"
+						replace death = 0 if death==.
+						
+					tab death cluster20, col chi2
+					
+					graph bar (mean)death, over(cluster20)
+					
+					tab dxccs1 if cluster20==19 & dxccs1!="2", sort
+					tab dxccs2 if cluster20==19 & dxccs2!="2", sort
+					
+		**** ANalysis code for quad output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/quadoutput.csv", delimiter(comma) 
+
+					rename v107 cluster
+				
+					tab cluster
+					table cluster, c(mean age sd age)
+						anova age cluster
+					tab female cluster, col chi2
+					tab died cluster, col chi2
+				
+					table cluster, c(mean los sd los)
+						anova los cluster
+						
+					destring totchg, gen(totchg2) force
+					table cluster, c(mean totchg2 sd totchg2)
+						anova totchg2 cluster
+					
+				
+					forval i=1/6 {
+						tab dxccs1 if cluster==`i', sort
+						}
+						
+					forval i=1/6 {
+						tab prccs1 if cluster==`i', sort
+						}
+				
+							
+			**** ANalysis code for new.delirium output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/newdeliriumoutput.csv", delimiter(comma) 
+
+					rename v107 cluster
+				
+					tab cluster
+					table cluster, c(mean age sd age)
+						anova age cluster
+					tab female cluster, col chi2
+					tab died cluster, col chi2
+				
+					destring los, force replace
+					table cluster, c(mean los sd los)
+						anova los cluster
+						
+					destring totchg, gen(totchg2) force
+					table cluster, c(mean totchg2 sd totchg2)
+						anova totchg2 cluster
+					
+				
+					forval i=1/4 {
+						tab dxccs1 if cluster==`i', sort
+						}
+						
+					forval i=1/4 {
+						tab prccs1 if cluster==`i', sort
+						}	
+			**** ANalysis code for new.data output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/newoutput.csv", delimiter(comma) 
+
+					rename v107 cluster
+				
+					tab cluster
+					table cluster, c(mean age sd age)
+						anova age cluster
+					tab female cluster, col chi2
+					tab died cluster, col chi2
+				
+					table cluster, c(mean los sd los)
+						anova los cluster
+						
+					destring totchg, gen(totchg2) force
+					table cluster, c(mean totchg2 sd totchg2)
+						anova totchg2 cluster
+					
+				
+					forval i=1/8 {
+						tab dxccs1 if cluster==`i', sort
+						}
+						
+					forval i=1/8 {
+						tab prccs1 if cluster==`i', sort
+						}
+				
+							
+			**** ANalysis code for r50.data output ***
+		
+		
+				clear
+				
+				import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/r50output.csv", delimiter(comma) 
+
+					rename v137 cluster
+				
+					tab cluster
+					table cluster, c(mean age sd age)
+						anova age cluster
+					tab female cluster, col chi2
+					tab died cluster, col chi2
+				
+					table cluster, c(mean los sd los)
+						anova los cluster
+						
+					destring totchg, gen(totchg2) force
+					table cluster, c(mean totchg2 sd totchg2)
+						anova totchg2 cluster
+					
+				
+					forval i=1/8 {
+						tab dxccs1 if cluster==`i', sort
+						}
+						
+					forval i=1/8 {
+						tab prccs1 if cluster==`i', sort
+						}				
+				
+				
+				
+				
+				
+				
+				
+					gen n = _n
+					sort n
+				
+					rename v1 key
+				save "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/quadkey.dta", replace
+		
+			** merge linker file with svd ***
+		
+			clear
+			
+			import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/quadsvdx.csv", delimiter(comma) 
+			
+				gen n = _n
+				sort n 
+			
+				merge 1:1 n using "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/quadkey.dta"
+				
+					drop _merge n v21
+					
+				** do clustering **
+				
+				cluster completelinkage v1-v20, measure(Euclidean) name(cluster)
+				cluster generate clusterid = groups(3)
+			
+					
+				*******
+	
+	
+		clear
+		
+		import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/NIS Slim 2010.csv"
+
+		** identify any sepsis flags **
+		
+		gen sepsis=.
+		forval i = 1(1)25 {
+			replace sepsis = 1 if dxccs`i'==2
+			}
+		forval i = 1(1)25 {
+			replace sepsis = 1 if dx`i'=="78552" & sepsis==.
+			}
+			
+			keep key sepsis
+			
+			 save "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/NIS2010Sepsis.dta", replace
+			 
+			 
+			export delimited using "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/NIS2010Sepsis.csv", replace
+
+			
+		*** data re-evaluation ***
+		** sepsis **
+		
+		clear
+		
+		import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/sepsisoutput.csv", delimiter(comma) 
+
+				destring died, replace force
+				
+				
+			gen max=.
+			gen value =0
+			
+			forval i=1(1)9 {
+				replace max = `i' if v`i'>value
+				}
+				order max, after(v9)
+				
+				
+		** delirium **
+		
+		clear
+		
+		import delimited "/Volumes/projects-group$/LIU ADMINISTRATIVE/StanfordPrivileges/BMI Masters/BMI212/GLRM Output/deliriumoutput.csv", delimiter(comma) 
+
+				tab v96
+				
+				table v96, c(mean age sd age)
+				anova age v96
+				
+				tab female v96, col chi2
+				
+				tab died v96, col chi2
+				
+				tab dxccs1 v96, col chi2
+				
+				destring dxccs1, force gen(ccs)
+				
+				gen ccs1 = ccs if ccs ==2 | ccs==108 | ccs==109 | ccs==122 | ccs==152 | ccs==159 | ccs==226
+				replace ccs1 = 0 if ccs1==.
+				
+				tab prccs1 v96, col chi2
+					
+
+
